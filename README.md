@@ -6,6 +6,9 @@
 <p align="center">
   他のMOD開発者: 私たちのコードを使用する場合は、次のセクションを読んで尊重してください。 <a href="#license">license</a></p>
 
+  <p align="center">
+  下の画像をクリックすることでTORGM最新版に対応したディスコ―ドのサーバーに飛べます</p>
+
 [![Discord](./Images/TOR_server.png)](https://discord.gg/yBuPQGahha)
 ![eisbison infographic](./Images/TOR_Roles.png)
 
