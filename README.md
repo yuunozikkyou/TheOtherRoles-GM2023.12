@@ -17,7 +17,7 @@ Even more roles are coming soon. :)
 
 | インポスター | クルーメイト | 第三陣営 | オプション | ゲームモード |
 |----------|-------------|-----------------|----------------|----------------|
-| [ゴットファーザー (マフィア)](#mafia) | [市長](#mayor) | [ジェスター](#jester) | [血まみれ](#bloody) | [クラシック](#roles) |
+| [ゴットファーザー (マフィア)](#mafia) | [メイヤー](#mayor) | [ジェスター](#jester) | [血まみれ](#bloody) | [クラシック](#roles) |
 | [マフィア (マフィア)](#mafia) | [エンジニア](#engineer) | [アーソニスト](#arsonist) | [アンチテレポーター](#anti-teleport) | [ゲッサーモード](#guesser-modifier) |
 | [ジャニター (マフィア)](#mafia) | [シェリフ](#sheriff) | [ジャッカル](#jackal) | [タイブレーカー](#tie-breaker) | [かくれんぼ](#hide-n-seek) |
 | [モーフィング](#morphling) | [デキューティ](#deputy) | [サイドキック](#sidekick) | [ベイト](#bait) | [バニラのかくれんぼ](https://www.innersloth.com/new-game-mode-hide-n-seek-is-here-emergency-meeting-35/) |
@@ -39,7 +39,7 @@ Even more roles are coming soon. :)
 
 The [Role Assignment](#role-assignment) sections explains how the roles are being distributed among the players.
 
-# TheOtherTolesのダウンロード
+# TheOtherRolesのダウンロード
 | Among Us - Version| Mod Version | Link |
 |----------|-------------|-----------------|
 | 2023.07.12s| v4.3.3| [Download](https://github.com/Eisbison/TheOtherRoles/releases/download/v4.3.3/TheOtherRoles.zip)
