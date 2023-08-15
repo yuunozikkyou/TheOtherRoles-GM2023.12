@@ -1,8 +1,13 @@
 ![eisbison banner](./Images/TOR_logo.png)
-<p align="center"><a href="https://github.com/Eisbison/TheOtherRoles/releases/"><img src="https://badgen.net/github/release/eisbison/theotherroles"></a></p>
+<p align="center"><a href="https://github.com/Eisbison/TheOtherRoles/releases/"><img src="https://badgen.net/github/release/eisbison/theotherroles"></a>
+
+  <p align="center">
+  このModはのちにリリースされます</p>
+
+</p>
 
 
-このMODはAmong UsまたはInnersloth LLCとは無関係であり、そこに含まれるコンテンツはInnersloth LLCによって支持または後援されているものではありません。ここに含まれる素材の一部は Innersloth LLC の所有物です。© Innersloth LLC.また、TheOtherRoles等とも関係ありません</p>
+このMODはAmong UsまたInnersloth LLCとは無関係であり、そこに含まれるコンテンツはInnersloth LLCによって支持または後援されているものではありません。ここに含まれる素材の一部は Innersloth LLC の所有物です。© Innersloth LLC.また、TheOtherRoles等とも関係ありません</p>
 <p align="center">
   他のMOD開発者: 私たちのコードを使用する場合は、次のセクションを読んで尊重してください。 <a href="#license">license</a></p>
 
