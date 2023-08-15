@@ -18,7 +18,7 @@ Even more roles are coming soon. :)
 | インポスター | クルーメイト | 第三陣営 | オプション | ゲームモード |
 |----------|-------------|-----------------|----------------|----------------|
 | [ゴットファーザー (マフィア)](#mafia) | [市長](#mayor) | [ジェスター](#jester) | [血まみれ](#bloody) | [クラシック](#roles) |
-| [マフィア (マフィア)](#mafia) | エンジニア](#engineer) | [アーソニスト](#arsonist) | [アンチテレポーター](#anti-teleport) | [ゲッサーモード](#guesser-modifier) |
+| [マフィア (マフィア)](#mafia) | [エンジニア](#engineer) | [アーソニスト](#arsonist) | [アンチテレポーター](#anti-teleport) | [ゲッサーモード](#guesser-modifier) |
 | [ジャニター (マフィア)](#mafia) | [シェリフ](#sheriff) | [ジャッカル](#jackal) | [タイブレーカー](#tie-breaker) | [かくれんぼ](#hide-n-seek) |
 | [モーフィング](#morphling) | [デキューティ](#deputy) | [サイドキック](#sidekick) | [ベイト](#bait) | [バニラのかくれんぼ](https://www.innersloth.com/new-game-mode-hide-n-seek-is-here-emergency-meeting-35/) |
 | [カモフラージャー](#camouflager) | [ライター](#lighter) | [ヴァルチャー](#vulture) | [ラバーズ](#lovers) |
