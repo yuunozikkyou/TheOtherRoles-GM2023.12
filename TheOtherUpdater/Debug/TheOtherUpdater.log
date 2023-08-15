@@ -1,0 +1,6 @@
+﻿  zip.c
+  TheOtherUpdater.cpp
+LINK : warning LNK4098: defaultlib 'MSVCRTD' は他のライブラリの使用と競合しています。/NODEFAULTLIB:library を使用してください。
+TheOtherUpdater.obj : error LNK2019: 未解決の外部シンボル __imp___invalid_parameter が関数 "void * __cdecl std::_Allocate_manually_vector_aligned<struct std::_Default_allocate_traits>(unsigned int)" (??$_Allocate_manually_vector_aligned@U_Default_allocate_traits@std@@@std@@YAPAXI@Z) で参照されました
+TheOtherUpdater.obj : error LNK2019: 未解決の外部シンボル __imp___CrtDbgReport が関数 "void * __cdecl std::_Allocate_manually_vector_aligned<struct std::_Default_allocate_traits>(unsigned int)" (??$_Allocate_manually_vector_aligned@U_Default_allocate_traits@std@@@std@@YAPAXI@Z) で参照されました
+C:\Users\User\Downloads\TheOtherRoles-JPEdition-main\TheOtherRoles-JPEdition\Debug\TheOtherUpdater.exe : fatal error LNK1120: 2 件の未解決の外部参照
