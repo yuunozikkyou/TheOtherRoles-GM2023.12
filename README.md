@@ -4,8 +4,6 @@
   <p align="center">
   このModはのちにリリースされます</p>
 
-(./Images/icon?theotherrolesjpedition.png)
-
 </p>
 
 
@@ -17,6 +15,7 @@
   下の画像をクリックすることでTORGM最新版に対応したディスコ―ドのサーバーに飛べます</p>
 
 [![Discord](./Images/TOR_server.png)](https://discord.gg/yBuPQGahha)
+[![Discord](./Images/icon_theotherrolesjpedition.png)](https://discord.gg/yBuPQGahha)
 ![eisbison infographic](./Images/TOR_Roles.png)
 
 
