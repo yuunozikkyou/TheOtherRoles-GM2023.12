@@ -28,7 +28,7 @@ Even more roles are coming soon. :)
 | [ゴットファーザー (マフィア)](#mafia) | [メイヤー](#mayor) | [ジェスター](#jester) | [血まみれ](#bloody) | [クラシック](#roles) |
 | [マフィア (マフィア)](#mafia) | [エンジニア](#engineer) | [アーソニスト](#arsonist) | [アンチテレポーター](#anti-teleport) | [ゲッサーモード](#guesser-modifier) |
 | [ジャニター (マフィア)](#mafia) | [シェリフ](#sheriff) | [ジャッカル](#jackal) | [タイブレーカー](#tie-breaker) | [かくれんぼ](#hide-n-seek) |
-| [モーフィング](#morphling) | [デキューティ](#deputy) | [サイドキック](#sidekick) | [ベイト](#bait) | [バニラのかくれんぼ](https://www.innersloth.com/new-game-mode-hide-n-seek-is-here-emergency-meeting-35/) |
+| [モーフィング](#morphling) | [代理人](#deputy) | [サイドキック](#sidekick) | [ベイト](#bait) | [バニラのかくれんぼ](https://www.innersloth.com/new-game-mode-hide-n-seek-is-here-emergency-meeting-35/) |
 | [カモフラージャー](#camouflager) | [ライター](#lighter) | [ヴァルチャー](#vulture) | [ラバーズ](#lovers) |
 | [ヴァンパイア](#vampire) | [探偵](#detective) | [弁護士](#lawyer) | [サングラス](#sunglasses) |
 | [イレイサー](#eraser) | [タイムマスター](#time-master) | [検察](#prosecutor) | [ミニ](#mini) |
