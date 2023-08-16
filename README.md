@@ -31,7 +31,7 @@ Even more roles are coming soon. :)
 | [モーフィング](#morphling) | [代理人](#deputy) | [サイドキック](#sidekick) | [ベイト](#bait) | [バニラのかくれんぼ](https://www.innersloth.com/new-game-mode-hide-n-seek-is-here-emergency-meeting-35/) |
 | [カモフラージャー](#camouflager) | [ライター](#lighter) | [ヴァルチャー](#vulture) | [ラバーズ](#lovers) |
 | [ヴァンパイア](#vampire) | [探偵](#detective) | [弁護士](#lawyer) | [サングラス](#sunglasses) |
-| [イレイサー](#eraser) | [タイムマスター](#time-master) | [検察](#prosecutor) | [ミニ](#mini) |
+| [イレイサー](#eraser) | [タイムマスター](#time-master) | [検察官](#prosecutor) | [ミニ](#mini) |
 | [トリックスター](#trickster) | [メディック](#medic) | [追跡者](#pursuer) | [VIP](#vip) |
 | [クリーナー](#cleaner) | [スワッパー](#swapper) | [泥棒](#thief) | [反転](#invert) |
 | [裏切者](#warlock) | [シーア](#seer) |  | [カメレオン](#chameleon) |
