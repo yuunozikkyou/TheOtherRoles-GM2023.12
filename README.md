@@ -4,6 +4,8 @@
   <p align="center">
   このModはのちにリリースされます</p>
 
+(./Images/icon?theotherrolesjpedition.png)
+
 </p>
 
 
