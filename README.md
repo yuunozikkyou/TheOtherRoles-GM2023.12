@@ -1,8 +1,7 @@
 ![eisbison banner](./Images/TOR_logo.png)
 <p align="center"><a href="https://github.com/Eisbison/TheOtherRoles/releases/"><img src="https://badgen.net/github/release/eisbison/theotherroles"></a>
 
-  <p align="center">
-  このModはのちにリリースされます</p>
+
 
 </p>
 
@@ -41,7 +40,7 @@ Even more roles are coming soon. :)
 | [バウンティーハンター](#bounty-hunter) | [ハッカー](#hacker) |  | [シフター](#shifter)
 | [ウィッチ](#witch) | [トラッカー](#tracker) |  |  |
 | [ニンジャ](#ninja) | [スニッチ](#snitch) |  |  |
-| [ボマー](#bomber) | [スパイ](#spy) |  |  |
+| [ボンバー](#bomber) | [スパイ](#spy) |  |  |
 | [イビルゲッサー](#guesser) | [ポートメーカー](#portalmaker) |  |  |
 |  | [ガードマン](#security-guard) |  |  |
 |  | [ミディアム](#medium) |  |  |
