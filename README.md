@@ -4,6 +4,8 @@
 
 
 </p>
+<p align="center">
+ このModをあまりフォークしないでください理由は、コードをアップデートしてることが少ないからです。また、フォークしたいときは公式ディスコ―ドに行って、ゆうの実況にDMしてください</p>
 
 
 このMODはAmong UsまたInnersloth LLCとは無関係であり、そこに含まれるコンテンツはInnersloth LLCによって支持または後援されているものではありません。ここに含まれる素材の一部は Innersloth LLC の所有物です。© Innersloth LLC.また、TheOtherRoles等とも関係ありません</p>
