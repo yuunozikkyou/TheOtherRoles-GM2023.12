@@ -11,7 +11,10 @@
 このMODはAmong UsまたInnersloth LLCとは無関係であり、そこに含まれるコンテンツはInnersloth LLCによって支持または後援されているものではありません。ここに含まれる素材の一部は Innersloth LLC の所有物です。© Innersloth LLC.また、TheOtherRoles等とも関係ありません</p>
 <p align="center">
   他のMOD開発者: 私たちのコードを使用する場合は、次のセクションを読んで尊重してください。 <a href="#license">license</a></p>
-
+<p align="center">
+ また今、カスタムスキンハットの翻訳方法がわからないので公式ディスコ―ド等で教えてくれるとありがたいです
+  <p align="center">
+ 
   <p align="center">
   下の画像をクリックすることでTORGM最新版に対応したディスコ―ドのサーバーに飛べます</p>
 
