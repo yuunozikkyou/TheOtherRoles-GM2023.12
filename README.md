@@ -23,7 +23,7 @@
   <p align="center">
  下の画像をクリックし、Googleホームに飛びます</p>
 
- [![Googleform](./Images/Googleforms.png)]([https://discord.gg/yBuPQGahha](https://docs.google.com/forms/d/e/1FAIpQLScHrzInlkPx7_jgriFl_cXqz48o1TvniV1JvK-Ei_g4y2xQaA/viewform?usp=pp_url))
+ [![Googleform](./Images/forms_2020q4_48dp.png)]([https://discord.gg/yBuPQGahha](https://docs.google.com/forms/d/e/1FAIpQLScHrzInlkPx7_jgriFl_cXqz48o1TvniV1JvK-Ei_g4y2xQaA/viewform?usp=pp_url))
   
   <p align="center">
   下の画像をクリックすることでTORJP最新版に対応したディスコ―ドのサーバーに飛べます</p>
