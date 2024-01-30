@@ -16,11 +16,12 @@ using UnityEngine;
 using TheOtherRoles.Modules;
 using TheOtherRoles.Players;
 using TheOtherRoles.Utilities;
-using Reactor;
 using Il2CppSystem.Security.Cryptography;
 using Il2CppSystem.Text;
 using Reactor.Networking.Attributes;
 using AmongUs.Data;
+using TheOtherRoles.Modules.CustomHats;
+using static TheOtherRoles.Modules.ModUpdater;
 
 namespace TheOtherRoles
 {
@@ -28,10 +29,11 @@ namespace TheOtherRoles
     [BepInDependency(SubmergedCompatibility.SUBMERGED_GUID, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInProcess("Among Us.exe")]
     [ReactorModFlags(Reactor.Networking.ModFlags.RequireOnAllClients)]
+    
     public class TheOtherRolesPlugin : BasePlugin
     {
         public const string Id = "me.eisbison.theotherroles";
-        public const string VersionString = "4.0.1";
+        public const string VersionString = "4.2.0";
         public static uint betaDays = 0;  // amount of days for the build to be usable (0 for infinite!)
 
         public static Version Version = Version.Parse(VersionString);
@@ -51,6 +53,7 @@ namespace TheOtherRoles
         public static ConfigEntry<bool> ShowLighterDarker { get; set; }
         public static ConfigEntry<bool> EnableSoundEffects { get; set; }
         public static ConfigEntry<bool> EnableHorseMode { get; set; }
+        public static ConfigEntry<bool> ShowVentsOnMap { get; set; }
         public static ConfigEntry<string> Ip { get; set; }
         public static ConfigEntry<ushort> Port { get; set; }
         public static ConfigEntry<string> ShowPopUpVersion { get; set; }
@@ -92,6 +95,7 @@ namespace TheOtherRoles
             Instance = this;
   
             _ = Helpers.checkBeta(); // Exit if running an expired beta
+            _ = Patches.CredentialsPatch.MOTD.loadMOTDs();
 
             DebugMode = Config.Bind("Custom", "Enable Debug Mode", "false");
             GhostsSeeInformation = Config.Bind("Custom", "Ghosts See Remaining Tasks", true);
@@ -103,6 +107,7 @@ namespace TheOtherRoles
             EnableSoundEffects = Config.Bind("Custom", "Enable Sound Effects", true);
             EnableHorseMode = Config.Bind("Custom", "Enable Horse Mode", false);
             ShowPopUpVersion = Config.Bind("Custom", "Show PopUp", "0");
+            ShowVentsOnMap = Config.Bind("Custom", "Show vent positions on minimap", false);
             
             Ip = Config.Bind("Custom", "Custom Server IP", "127.0.0.1");
             Port = Config.Bind("Custom", "Custom Server Port", (ushort)22023);
@@ -115,22 +120,21 @@ namespace TheOtherRoles
             
             CustomOptionHolder.Load();
             CustomColors.Load();
+            CustomHatManager.LoadHats();
             if (BepInExUpdater.UpdateRequired)
             {
                 AddComponent<BepInExUpdater>();
                 return;
             }
 
+            AddComponent<ModUpdater>();
+
             EventUtility.Load();
             SubmergedCompatibility.Initialize();
-            AddComponent<ModUpdateBehaviour>();
-            Modules.MainMenuPatch.addSceneChangeCallbacks();
-
+            MainMenuPatch.addSceneChangeCallbacks();
+            _ = RoleInfo.loadReadme();
+            AddToKillDistanceSetting.addKillDistance();
             TheOtherRolesPlugin.Logger.LogInfo("Loading TOR completed!");
-        }
-        public static Sprite GetModStamp() {
-            if (ModStamp) return ModStamp;
-            return ModStamp = Helpers.loadSpriteFromResources("TheOtherRoles.Resources.ModStamp.png", 150f);
         }
     }
 

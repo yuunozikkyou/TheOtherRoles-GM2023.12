@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using TheOtherRoles.Players;
 using TheOtherRoles.Utilities;
 using TheOtherRoles.CustomGameModes;
+using TheOtherRoles.Patches;
 
 namespace TheOtherRoles
 {
@@ -62,9 +63,18 @@ namespace TheOtherRoles
         private static CustomButton hunterAdminTableButton;
         private static CustomButton hunterArrowButton;
         private static CustomButton huntedShieldButton;
+        public static CustomButton propDisguiseButton;
+        private static CustomButton propHuntUnstuckButton;
+        public static CustomButton propHuntRevealButton;
+        private static CustomButton propHuntInvisButton;
+        private static CustomButton propHuntSpeedboostButton;
+        public static CustomButton propHuntAdminButton;
+        public static CustomButton propHuntFindButton;
 
         public static Dictionary<byte, List<CustomButton>> deputyHandcuffedButtons = null;
         public static PoolablePlayer targetDisplay;
+        public static GameObject propSpriteHolder;
+        public static SpriteRenderer propSpriteRenderer;
 
         public static TMPro.TMP_Text securityGuardButtonScrewsText;
         public static TMPro.TMP_Text securityGuardChargesText;
@@ -132,6 +142,13 @@ namespace TheOtherRoles
             huntedShieldButton.MaxTimer = Hunted.shieldCooldown;
             defuseButton.MaxTimer = 0f;
             defuseButton.Timer = 0f;
+            propDisguiseButton.MaxTimer = 1f;
+            propHuntUnstuckButton.MaxTimer = PropHunt.unstuckCooldown;
+            propHuntRevealButton.MaxTimer = PropHunt.revealCooldown;
+            propHuntInvisButton.MaxTimer = PropHunt.invisCooldown;
+            propHuntSpeedboostButton.MaxTimer = PropHunt.speedboostCooldown;
+            propHuntAdminButton.MaxTimer = PropHunt.adminCooldown;
+            propHuntFindButton.MaxTimer = PropHunt.findCooldown;
 
             timeMasterShieldButton.EffectDuration = TimeMaster.shieldDuration;
             hackerButton.EffectDuration = Hacker.duration;
@@ -151,6 +168,12 @@ namespace TheOtherRoles
             huntedShieldButton.EffectDuration = Hunted.shieldDuration;
             defuseButton.EffectDuration = Bomber.defuseDuration;
             bomberButton.EffectDuration = Bomber.destructionTime + Bomber.bombActiveAfter;
+            propHuntUnstuckButton.EffectDuration = PropHunt.unstuckDuration;
+            propHuntRevealButton.EffectDuration = PropHunt.revealDuration;
+            propHuntInvisButton.EffectDuration = PropHunt.invisDuration;
+            propHuntSpeedboostButton.EffectDuration = PropHunt.speedboostDuration;
+            propHuntAdminButton.EffectDuration = PropHunt.adminDuration;
+            propHuntFindButton.EffectDuration = PropHunt.findDuration;
             // Already set the timer to the max, as the button is enabled during the game and not available at the start
             lightsOutButton.Timer = lightsOutButton.MaxTimer;
             zoomOutButton.MaxTimer = 0f;
@@ -527,7 +550,7 @@ namespace TheOtherRoles
                     }
                 },
                 () => { return Morphling.morphling != null && Morphling.morphling == CachedPlayer.LocalPlayer.PlayerControl && !CachedPlayer.LocalPlayer.Data.IsDead; },
-                () => { return (Morphling.currentTarget || Morphling.sampledTarget) && CachedPlayer.LocalPlayer.PlayerControl.CanMove; },
+                () => { return (Morphling.currentTarget || Morphling.sampledTarget) && CachedPlayer.LocalPlayer.PlayerControl.CanMove && !Helpers.MushroomSabotageActive(); },
                 () => { 
                     morphlingButton.Timer = morphlingButton.MaxTimer;
                     morphlingButton.Sprite = Morphling.getSampleSprite();
@@ -673,11 +696,11 @@ namespace TheOtherRoles
 
                    Hacker.chargesVitals--;
                },
-               () => { return Hacker.hacker != null && Hacker.hacker == CachedPlayer.LocalPlayer.PlayerControl && !CachedPlayer.LocalPlayer.Data.IsDead && GameOptionsManager.Instance.currentNormalGameOptions.MapId != 0 && GameOptionsManager.Instance.currentNormalGameOptions.MapId != 3; },
+               () => { return Hacker.hacker != null && Hacker.hacker == CachedPlayer.LocalPlayer.PlayerControl && !CachedPlayer.LocalPlayer.Data.IsDead && GameOptionsManager.Instance.currentGameOptions.MapId != 0 && GameOptionsManager.Instance.currentNormalGameOptions.MapId != 3; },
                () => {
                    if (hackerVitalsChargesText != null) hackerVitalsChargesText.text = $"{Hacker.chargesVitals} / {Hacker.toolsNumber}";
-                   hackerVitalsButton.actionButton.graphic.sprite = GameOptionsManager.Instance.currentNormalGameOptions.MapId == 1 ? Hacker.getLogSprite() : Hacker.getVitalsSprite();
-                   hackerVitalsButton.actionButton.OverrideText(GameOptionsManager.Instance.currentNormalGameOptions.MapId == 1 ? "DOORLOG" : "VITALS");
+                   hackerVitalsButton.actionButton.graphic.sprite = Helpers.isMira() ? Hacker.getLogSprite() : Hacker.getVitalsSprite();
+                   hackerVitalsButton.actionButton.OverrideText(Helpers.isMira() ? "DOORLOG" : "VITALS");
                    return Hacker.chargesVitals > 0;
                },
                () => {
@@ -691,16 +714,16 @@ namespace TheOtherRoles
                KeyCode.Q,
                true,
                0f,
-               () => { 
+               () => {
                    hackerVitalsButton.Timer = hackerVitalsButton.MaxTimer;
-                   if(!hackerAdminTableButton.isEffectActive) CachedPlayer.LocalPlayer.PlayerControl.moveable = true;
+                   if (!hackerAdminTableButton.isEffectActive) CachedPlayer.LocalPlayer.PlayerControl.moveable = true;
                    if (Minigame.Instance) {
-                       if (GameOptionsManager.Instance.currentNormalGameOptions.MapId == 1) Hacker.doorLog.ForceClose();
+                       if (Helpers.isMira()) Hacker.doorLog.ForceClose();
                        else Hacker.vitals.ForceClose();
                    }
                },
                false,
-              GameOptionsManager.Instance.currentNormalGameOptions.MapId == 1 ? "DOORLOG" : "VITALS"
+              Helpers.isMira() ? "DOORLOG" : "VITALS"
            );
 
             // Hacker Vitals Charges
@@ -787,12 +810,14 @@ namespace TheOtherRoles
                                 }
                                 if (p == 1f) {
                                     // Perform kill if possible and reset bitten (regardless whether the kill was successful or not)
-                                    Helpers.checkMurderAttemptAndKill(Vampire.vampire, Vampire.bitten, showAnimation: false);
-                                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(CachedPlayer.LocalPlayer.PlayerControl.NetId, (byte)CustomRPC.VampireSetBitten, Hazel.SendOption.Reliable, -1);
-                                    writer.Write(byte.MaxValue);
-                                    writer.Write(byte.MaxValue);
-                                    AmongUsClient.Instance.FinishRpcImmediately(writer);
-                                    RPCProcedure.vampireSetBitten(byte.MaxValue, byte.MaxValue);
+                                    var res = Helpers.checkMurderAttemptAndKill(Vampire.vampire, Vampire.bitten, showAnimation: false);
+                                    if (res == MurderAttemptResult.PerformKill) {
+                                        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(CachedPlayer.LocalPlayer.PlayerControl.NetId, (byte)CustomRPC.VampireSetBitten, Hazel.SendOption.Reliable, -1);
+                                        writer.Write(byte.MaxValue);
+                                        writer.Write(byte.MaxValue);
+                                        AmongUsClient.Instance.FinishRpcImmediately(writer);
+                                        RPCProcedure.vampireSetBitten(byte.MaxValue, byte.MaxValue);
+                                    }
                                 }
                             })));
                             SoundEffectsManager.play("vampireBite");
@@ -848,7 +873,7 @@ namespace TheOtherRoles
                     RPCProcedure.placeGarlic(buff);
                     SoundEffectsManager.play("garlic");
                 },
-                () => { return !Vampire.localPlacedGarlic && !CachedPlayer.LocalPlayer.Data.IsDead && Vampire.garlicsActive && !HideNSeek.isHideNSeekGM; },
+                () => { return !Vampire.localPlacedGarlic && !CachedPlayer.LocalPlayer.Data.IsDead && Vampire.garlicsActive && !HideNSeek.isHideNSeekGM && !PropHunt.isPropHuntGM; },
                 () => { return CachedPlayer.LocalPlayer.PlayerControl.CanMove && !Vampire.localPlacedGarlic; },
                 () => { },
                 Vampire.getGarlicButtonSprite(),
@@ -1092,7 +1117,8 @@ namespace TheOtherRoles
                     RPCProcedure.lightsOut();
                     SoundEffectsManager.play("lighterLight");
                 },
-                () => { return Trickster.trickster != null && Trickster.trickster == CachedPlayer.LocalPlayer.PlayerControl && !CachedPlayer.LocalPlayer.Data.IsDead && JackInTheBox.hasJackInTheBoxLimitReached() && JackInTheBox.boxesConvertedToVents; },
+                () => { return Trickster.trickster != null && Trickster.trickster == CachedPlayer.LocalPlayer.PlayerControl && !CachedPlayer.LocalPlayer.Data.IsDead
+                                                           && JackInTheBox.hasJackInTheBoxLimitReached() && JackInTheBox.boxesConvertedToVents; },
                 () => { return CachedPlayer.LocalPlayer.PlayerControl.CanMove && JackInTheBox.hasJackInTheBoxLimitReached() && JackInTheBox.boxesConvertedToVents; },
                 () => { 
                     lightsOutButton.Timer = lightsOutButton.MaxTimer;
@@ -1219,7 +1245,7 @@ namespace TheOtherRoles
                         RPCProcedure.sealVent(SecurityGuard.ventTarget.Id);
                         SecurityGuard.ventTarget = null;
                         
-                    } else if (GameOptionsManager.Instance.currentNormalGameOptions.MapId != 1 && !SubmergedCompatibility.IsSubmerged) { // Place camera if there's no vent and it's not MiraHQ or Submerged
+                    } else if (!Helpers.isMira() && !Helpers.isFungle() && !SubmergedCompatibility.IsSubmerged) { // Place camera if there's no vent and it's not MiraHQ or Submerged
                         var pos = CachedPlayer.LocalPlayer.transform.position;
                         byte[] buff = new byte[sizeof(float) * 2];
                         Buffer.BlockCopy(BitConverter.GetBytes(pos.x), 0, buff, 0*sizeof(float), sizeof(float));
@@ -1235,12 +1261,12 @@ namespace TheOtherRoles
                 },
                 () => { return SecurityGuard.securityGuard != null && SecurityGuard.securityGuard == CachedPlayer.LocalPlayer.PlayerControl && !CachedPlayer.LocalPlayer.Data.IsDead && SecurityGuard.remainingScrews >= Mathf.Min(SecurityGuard.ventPrice, SecurityGuard.camPrice); },
                 () => {
-                    securityGuardButton.actionButton.graphic.sprite = (SecurityGuard.ventTarget == null && GameOptionsManager.Instance.currentNormalGameOptions.MapId != 1 && !SubmergedCompatibility.IsSubmerged) ? SecurityGuard.getPlaceCameraButtonSprite() : SecurityGuard.getCloseVentButtonSprite(); 
+                    securityGuardButton.actionButton.graphic.sprite = (SecurityGuard.ventTarget == null && !Helpers.isMira() && !Helpers.isFungle() && !SubmergedCompatibility.IsSubmerged) ? SecurityGuard.getPlaceCameraButtonSprite() : SecurityGuard.getCloseVentButtonSprite(); 
                     if (securityGuardButtonScrewsText != null) securityGuardButtonScrewsText.text = $"{SecurityGuard.remainingScrews}/{SecurityGuard.totalScrews}";
 
                     if (SecurityGuard.ventTarget != null)
                         return SecurityGuard.remainingScrews >= SecurityGuard.ventPrice && CachedPlayer.LocalPlayer.PlayerControl.CanMove;
-                    return GameOptionsManager.Instance.currentNormalGameOptions.MapId != 1 && !SubmergedCompatibility.IsSubmerged && SecurityGuard.remainingScrews >= SecurityGuard.camPrice && CachedPlayer.LocalPlayer.PlayerControl.CanMove;
+                    return !Helpers.isMira() && !Helpers.isFungle() && !SubmergedCompatibility.IsSubmerged && SecurityGuard.remainingScrews >= SecurityGuard.camPrice && CachedPlayer.LocalPlayer.PlayerControl.CanMove;
                 },
                 () => { securityGuardButton.Timer = securityGuardButton.MaxTimer; },
                 SecurityGuard.getPlaceCameraButtonSprite(),
@@ -1258,13 +1284,12 @@ namespace TheOtherRoles
 
             securityGuardCamButton = new CustomButton(
                 () => {
-                    if (GameOptionsManager.Instance.currentNormalGameOptions.MapId != 1) {
+                    if (!Helpers.isMira()) {
                         if (SecurityGuard.minigame == null) {
                             byte mapId = GameOptionsManager.Instance.currentNormalGameOptions.MapId;
-                            UnityEngine.Object.FindObjectsOfType<SystemConsole>().ToList().ForEach(x => TheOtherRolesPlugin.Logger.LogMessage($"{x.name} {x.GetType()}, {x.MinigamePrefab.TaskType}"));
-                            var e = UnityEngine.Object.FindObjectsOfType<SystemConsole>().FirstOrDefault(x => x.gameObject.name.Contains("Surv_Panel") || x.name.Contains("Cam"));
-                            if (mapId == 0 || mapId == 3) e = UnityEngine.Object.FindObjectsOfType<SystemConsole>().FirstOrDefault(x => x.gameObject.name.Contains("SurvConsole"));
-                            else if (mapId == 4) e = UnityEngine.Object.FindObjectsOfType<SystemConsole>().FirstOrDefault(x => x.gameObject.name.Contains("task_cams"));
+                            var e = UnityEngine.Object.FindObjectsOfType<SystemConsole>().FirstOrDefault(x => x.gameObject.name.Contains("Surv_Panel") || x.name.Contains("Cam") || x.name.Contains("BinocularsSecurityConsole"));
+                            if (Helpers.isSkeld() || mapId == 3) e = UnityEngine.Object.FindObjectsOfType<SystemConsole>().FirstOrDefault(x => x.gameObject.name.Contains("SurvConsole"));
+                            else if (Helpers.isAirship()) e = UnityEngine.Object.FindObjectsOfType<SystemConsole>().FirstOrDefault(x => x.gameObject.name.Contains("task_cams"));
                             if (e == null || Camera.main == null) return;
                             SecurityGuard.minigame = UnityEngine.Object.Instantiate(e.MinigamePrefab, Camera.main.transform, false);
                         }
@@ -1286,12 +1311,14 @@ namespace TheOtherRoles
                     if (SecurityGuard.cantMove) CachedPlayer.LocalPlayer.PlayerControl.moveable = false;
                     CachedPlayer.LocalPlayer.NetTransform.Halt(); // Stop current movement 
                 },
-                () => { return SecurityGuard.securityGuard != null && SecurityGuard.securityGuard == CachedPlayer.LocalPlayer.PlayerControl && !CachedPlayer.LocalPlayer.Data.IsDead && SecurityGuard.remainingScrews < Mathf.Min(SecurityGuard.ventPrice, SecurityGuard.camPrice)
-                               && !SubmergedCompatibility.IsSubmerged; },
+                () => {
+                    return SecurityGuard.securityGuard != null && SecurityGuard.securityGuard == CachedPlayer.LocalPlayer.PlayerControl && !CachedPlayer.LocalPlayer.Data.IsDead && SecurityGuard.remainingScrews < Mathf.Min(SecurityGuard.ventPrice, SecurityGuard.camPrice)
+                               && !SubmergedCompatibility.IsSubmerged;
+                },
                 () => {
                     if (securityGuardChargesText != null) securityGuardChargesText.text = $"{SecurityGuard.charges} / {SecurityGuard.maxCharges}";
-                    securityGuardCamButton.actionButton.graphic.sprite = GameOptionsManager.Instance.currentNormalGameOptions.MapId == 1 ? SecurityGuard.getLogSprite() : SecurityGuard.getCamSprite();
-                    securityGuardCamButton.actionButton.OverrideText(GameOptionsManager.Instance.currentNormalGameOptions.MapId == 1 ? "DOORLOG" : "SECURITY");
+                    securityGuardCamButton.actionButton.graphic.sprite = Helpers.isMira() ? SecurityGuard.getLogSprite() : SecurityGuard.getCamSprite();
+                    securityGuardCamButton.actionButton.OverrideText(Helpers.isMira() ? "DOORLOG" : "SECURITY");
                     return CachedPlayer.LocalPlayer.PlayerControl.CanMove && SecurityGuard.charges > 0;
                 },
                 () => {
@@ -1313,7 +1340,7 @@ namespace TheOtherRoles
                     CachedPlayer.LocalPlayer.PlayerControl.moveable = true;
                 },
                 false,
-                GameOptionsManager.Instance.currentNormalGameOptions.MapId == 1 ? "DOORLOG" : "SECURITY"
+                Helpers.isMira() ? "DOORLOG" : "SECURITY"
             );
 
             // Security Guard cam button charges
@@ -1662,7 +1689,7 @@ namespace TheOtherRoles
                 () => { return Ninja.ninja != null && Ninja.ninja == CachedPlayer.LocalPlayer.PlayerControl && !CachedPlayer.LocalPlayer.Data.IsDead; },
                 () => {  // CouldUse
                     ninjaButton.Sprite = Ninja.ninjaMarked != null ? Ninja.getKillButtonSprite() : Ninja.getMarkButtonSprite(); 
-                    return (Ninja.currentTarget != null || Ninja.ninjaMarked != null) && CachedPlayer.LocalPlayer.PlayerControl.CanMove;
+                    return (Ninja.currentTarget != null || Ninja.ninjaMarked != null && !TransportationToolPatches.isUsingTransportation(Ninja.ninjaMarked)) && CachedPlayer.LocalPlayer.PlayerControl.CanMove;
                 },
                 () => {  // on meeting ends
                     ninjaButton.Timer = ninjaButton.MaxTimer;
@@ -2019,6 +2046,191 @@ namespace TheOtherRoles
             huntedShieldCountText.enableWordWrapping = false;
             huntedShieldCountText.transform.localScale = Vector3.one * 0.5f;
             huntedShieldCountText.transform.localPosition += new Vector3(-0.05f, 0.7f, 0);
+
+
+            propDisguiseButton = new CustomButton(
+                () => {
+                    // Prop stuff
+                    var player = PlayerControl.LocalPlayer;
+                    GameObject disguiseTarget = PropHunt.currentTarget;
+                    if (disguiseTarget != null) {
+                        player.transform.localScale = disguiseTarget.transform.lossyScale;
+                        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(CachedPlayer.LocalPlayer.PlayerControl.NetId, (byte)CustomRPC.SetProp, Hazel.SendOption.Reliable, -1);
+                        writer.Write(CachedPlayer.LocalPlayer.PlayerId);
+                        writer.Write(disguiseTarget.gameObject.name);
+                        writer.Write(disguiseTarget.gameObject.transform.position.x);
+                        AmongUsClient.Instance.FinishRpcImmediately(writer);
+                        RPCProcedure.propHuntSetProp(CachedPlayer.LocalPlayer.PlayerId, disguiseTarget.gameObject.name, disguiseTarget.gameObject.transform.position.x);
+                        SoundEffectsManager.play("morphlingMorph");
+                        propDisguiseButton.Timer = 1f;
+                    }
+                },
+                () => { return PropHunt.isPropHuntGM && !PlayerControl.LocalPlayer.Data.Role.IsImpostor && !PlayerControl.LocalPlayer.Data.IsDead; },
+                () => {
+                    propSpriteRenderer.sprite = PropHunt.currentTarget?.GetComponent<SpriteRenderer>()?.sprite;
+                    if (propSpriteRenderer.sprite == null) propSpriteRenderer.sprite = PropHunt.currentTarget?.transform.GetComponentInChildren<SpriteRenderer>()?.sprite;
+                    if (propSpriteRenderer.sprite != null)
+                        propSpriteHolder.transform.localScale *= 1 / propSpriteRenderer.bounds.size.magnitude;
+                    return PropHunt.currentTarget != null && PropHunt.currentTarget?.GetComponent<SpriteRenderer>()?.sprite != null;
+                },
+                () => {},
+                null,
+                CustomButton.ButtonPositions.lowerRowRight,
+                __instance,
+                KeyCode.F,
+                buttonText: "DISGUISE"               
+                );
+            propSpriteHolder = new GameObject("TORPropButtonPropSpritePreview");
+            propSpriteRenderer = propSpriteHolder.AddComponent<SpriteRenderer>();
+            propSpriteHolder.transform.SetParent(propDisguiseButton.actionButtonGameObject.transform, false);
+            propSpriteHolder.transform.localPosition = new Vector3(0, 0, -2f);
+
+            propHuntUnstuckButton = new CustomButton(
+
+                () => {
+                    PlayerControl.LocalPlayer.Collider.enabled = false;
+                      },
+                () => { return PropHunt.isPropHuntGM && !PlayerControl.LocalPlayer.Data.IsDead; },
+                () => { return true; },
+                () => { },
+                PropHunt.getUnstuckButtonSprite(),
+                CustomButton.ButtonPositions.upperRowLeft,
+                __instance,
+                KeyCode.LeftShift,
+                true,
+                1f,
+                () => { PlayerControl.LocalPlayer.Collider.enabled = true;
+                        propHuntUnstuckButton.Timer = propHuntUnstuckButton.MaxTimer;
+                },
+                buttonText: "UNSTUCK"
+                );
+
+            propHuntRevealButton = new CustomButton(
+                () => {
+                    // select a random crewplayer to reveal.
+                    var candidates = PlayerControl.AllPlayerControls.ToArray().Where(x => !x.Data.Role.IsImpostor && !x.Data.IsDead && !PropHunt.isCurrentlyRevealed.ContainsKey(x.PlayerId)).ToList();
+                    var rng = new System.Random();
+                    PlayerControl selectedPlayer = candidates[rng.Next(candidates.Count)];
+                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(CachedPlayer.LocalPlayer.PlayerControl.NetId, (byte)CustomRPC.SetRevealed, Hazel.SendOption.Reliable, -1);
+                    writer.Write(selectedPlayer.PlayerId);
+                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+                    RPCProcedure.propHuntSetRevealed(selectedPlayer.PlayerId);
+
+                },
+                () => { return PropHunt.isPropHuntGM && !PlayerControl.LocalPlayer.Data.IsDead && PlayerControl.LocalPlayer.Data.Role.IsImpostor; },
+                () => { return PropHunt.timer - PropHunt.revealPunish > 0; },
+                () => { },
+                PropHunt.getRevealButtonSprite(),
+                CustomButton.ButtonPositions.upperRowFarLeft,
+                __instance,
+                KeyCode.R,
+                true,
+                5f,
+                () => {
+                    propHuntRevealButton.Timer = propHuntRevealButton.MaxTimer;
+                }
+                );
+
+            propHuntInvisButton = new CustomButton(
+                () => {
+                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(CachedPlayer.LocalPlayer.PlayerControl.NetId, (byte)CustomRPC.PropHuntSetInvis, Hazel.SendOption.Reliable, -1);
+                    writer.Write(CachedPlayer.LocalPlayer.PlayerId);
+                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+                    RPCProcedure.propHuntSetInvis(CachedPlayer.LocalPlayer.PlayerId);
+                    SoundEffectsManager.play("morphlingMorph");
+                },
+                () => { return PropHunt.isPropHuntGM && !PlayerControl.LocalPlayer.Data.IsDead && !PlayerControl.LocalPlayer.Data.Role.IsImpostor && PropHunt.enableInvis; },
+                () => { return PropHunt.currentObject.ContainsKey(PlayerControl.LocalPlayer.PlayerId); },
+                () => { },
+                PropHunt.getInvisButtonSprite(),
+                CustomButton.ButtonPositions.upperRowFarLeft,
+                __instance,
+                KeyCode.I,
+                true,
+                5f,
+                () => {
+                    SoundEffectsManager.play("morphlingMorph");
+                    propHuntInvisButton.Timer = propHuntInvisButton.MaxTimer;
+                },
+                buttonText: "INVIS"
+                );
+
+            propHuntSpeedboostButton = new CustomButton(
+                () => {
+                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(CachedPlayer.LocalPlayer.PlayerControl.NetId, (byte)CustomRPC.PropHuntSetSpeedboost, Hazel.SendOption.Reliable, -1);
+                    writer.Write(CachedPlayer.LocalPlayer.PlayerId);
+                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+                    RPCProcedure.propHuntSetSpeedboost(CachedPlayer.LocalPlayer.PlayerId);
+                    SoundEffectsManager.play("timemasterShield");
+                },
+                () => { return PropHunt.isPropHuntGM && !PlayerControl.LocalPlayer.Data.IsDead && !PlayerControl.LocalPlayer.Data.Role.IsImpostor && PropHunt.enableSpeedboost; },
+                () => { return true; },
+                () => { },
+                PropHunt.getSpeedboostButtonSprite(),
+                CustomButton.ButtonPositions.lowerRowCenter,
+                __instance,
+                KeyCode.G,
+                true,
+                5f,
+                () => {
+                    SoundEffectsManager.stop("timemasterShield");
+                    propHuntSpeedboostButton.Timer = propHuntSpeedboostButton.MaxTimer;
+                },
+                buttonText: "BOOST"
+                );
+
+            propHuntAdminButton = new CustomButton(
+               () => {
+                   if (!MapBehaviour.Instance || !MapBehaviour.Instance.isActiveAndEnabled) {
+                       HudManager __instance = FastDestroyableSingleton<HudManager>.Instance;
+                       __instance.InitMap();
+                       MapBehaviour.Instance.ShowCountOverlay(allowedToMove: true, showLivePlayerPosition: true, includeDeadBodies: false);
+                   }
+
+                   CachedPlayer.LocalPlayer.NetTransform.Halt(); // Stop current movement
+               },
+               () => { return PropHunt.isPropHuntGM && !PlayerControl.LocalPlayer.Data.IsDead && PlayerControl.LocalPlayer.Data.Role.IsImpostor; },
+               () => {
+                   propHuntAdminButton.PositionOffset = PlayerControl.LocalPlayer.inVent ? CustomButton.ButtonPositions.lowerRowRight : CustomButton.ButtonPositions.upperRowCenter;
+                   return !PlayerControl.LocalPlayer.inVent; },
+               () => {
+                   propHuntAdminButton.Timer = hunterAdminTableButton.MaxTimer;
+                   propHuntAdminButton.isEffectActive = false;
+                   propHuntAdminButton.actionButton.cooldownTimerText.color = Palette.EnabledColor;
+               },
+               Hacker.getAdminSprite(),
+               CustomButton.ButtonPositions.upperRowCenter,
+               __instance,
+               KeyCode.G,
+               true,
+               PropHunt.adminDuration,
+               () => {
+                   propHuntAdminButton.Timer = propHuntAdminButton.MaxTimer;
+                   if (MapBehaviour.Instance && MapBehaviour.Instance.isActiveAndEnabled) MapBehaviour.Instance.Close();
+               },
+               false,
+               "ADMIN"
+            ); 
+            propHuntFindButton = new CustomButton(
+                () => {
+                    SoundEffectsManager.play("timemasterShield");
+                },
+                () => { return PropHunt.isPropHuntGM && !PlayerControl.LocalPlayer.Data.IsDead && PlayerControl.LocalPlayer.Data.Role.IsImpostor; },
+                () => { return true; },
+                () => { },
+                PropHunt.getFindButtonSprite(),
+                CustomButton.ButtonPositions.lowerRowCenter,
+                __instance,
+                KeyCode.F,
+                true,
+                5f,
+                () => {
+                    SoundEffectsManager.stop("timemasterShield");
+                    propHuntFindButton.Timer = propHuntFindButton.MaxTimer;
+                    propHuntFindButton.isEffectActive = false;
+                },
+                buttonText: "FIND"
+                );
 
             // Set the default (or settings from the previous game) timers / durations when spawning the buttons
             initialized = true;

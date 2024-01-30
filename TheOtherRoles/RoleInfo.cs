@@ -6,6 +6,8 @@ using static TheOtherRoles.TheOtherRoles;
 using UnityEngine;
 using TheOtherRoles.Utilities;
 using TheOtherRoles.CustomGameModes;
+using System.Threading.Tasks;
+using System.Net.Http;
 
 namespace TheOtherRoles
 {
@@ -76,6 +78,8 @@ namespace TheOtherRoles
 
         public static RoleInfo hunter = new RoleInfo("ハンター", Palette.ImpostorRed, Helpers.cs(Palette.ImpostorRed, "クルーを探し、キルをする"), "クルーを探し、キルをする", RoleId.Impostor);
         public static RoleInfo hunted = new RoleInfo("ハンデット", Color.white, "隠す", "隠す", RoleId.Crewmate);
+
+        public static RoleInfo prop = new RoleInfo("プロップ", Color.white, "モノに化けて生き残る", "モノに変装する", RoleId.Crewmate);
 
 
 
@@ -222,12 +226,12 @@ namespace TheOtherRoles
             if (p == Pursuer.pursuer) infos.Add(pursuer);
             if (p == Thief.thief) infos.Add(thief);
 
-            // Default roles (just impostor, just crewmate, or hunter / hunted for hide n seek
+            // Default roles (just impostor, just crewmate, or hunter / hunted for hide n seek, prop hunt prop ...
             if (infos.Count == count) {
                 if (p.Data.Role.IsImpostor)
-                    infos.Add(TORMapOptions.gameMode == CustomGamemodes.HideNSeek ? RoleInfo.hunter : RoleInfo.impostor);
+                    infos.Add(TORMapOptions.gameMode == CustomGamemodes.HideNSeek || TORMapOptions.gameMode == CustomGamemodes.PropHunt ? RoleInfo.hunter : RoleInfo.impostor);
                 else
-                    infos.Add(TORMapOptions.gameMode == CustomGamemodes.HideNSeek ? RoleInfo.hunted : RoleInfo.crewmate);
+                    infos.Add(TORMapOptions.gameMode == CustomGamemodes.HideNSeek ? RoleInfo.hunted : TORMapOptions.gameMode == CustomGamemodes.PropHunt ? RoleInfo.prop : RoleInfo.crewmate);
             }
 
             return infos;
@@ -323,6 +327,27 @@ namespace TheOtherRoles
                 }
             }
             return roleName;
+        }
+
+
+        static string ReadmePage = "";
+        public static async Task loadReadme() {
+            if (ReadmePage == "") {
+                HttpClient client = new HttpClient();
+                HttpResponseMessage response = await client.GetAsync("https://raw.githubusercontent.com/TheOtherRolesAU/TheOtherRoles/main/README.md");
+                response.EnsureSuccessStatusCode();
+                string httpres = await response.Content.ReadAsStringAsync();
+                ReadmePage = httpres;
+            }
+        }
+        public static string GetRoleDescription(RoleInfo roleInfo) {
+            while (ReadmePage == "") {
+            }
+                
+            int index = ReadmePage.IndexOf($"## {roleInfo.name}");
+            int endindex = ReadmePage.Substring(index).IndexOf("### Game Options");
+            return ReadmePage.Substring(index, endindex);
+
         }
     }
 }

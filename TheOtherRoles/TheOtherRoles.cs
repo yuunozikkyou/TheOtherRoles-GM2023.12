@@ -76,6 +76,7 @@ namespace TheOtherRoles
             // Gamemodes
             HandleGuesser.clearAndReload();
             HideNSeek.clearAndReload();
+            PropHunt.clearAndReload();
 
         }
 
@@ -694,9 +695,10 @@ namespace TheOtherRoles
         public static Sprite getAdminSprite() {
             byte mapId = GameOptionsManager.Instance.currentNormalGameOptions.MapId;
             UseButtonSettings button = FastDestroyableSingleton<HudManager>.Instance.UseButton.fastUseSettings[ImageNames.PolusAdminButton]; // Polus
-            if (mapId == 0 || mapId == 3) button = FastDestroyableSingleton<HudManager>.Instance.UseButton.fastUseSettings[ImageNames.AdminMapButton]; // Skeld || Dleks
-            else if (mapId == 1) button = FastDestroyableSingleton<HudManager>.Instance.UseButton.fastUseSettings[ImageNames.MIRAAdminButton]; // Mira HQ
-            else if (mapId == 4) button = FastDestroyableSingleton<HudManager>.Instance.UseButton.fastUseSettings[ImageNames.AirshipAdminButton]; // Airship
+            if (Helpers.isSkeld() || mapId == 3) button = FastDestroyableSingleton<HudManager>.Instance.UseButton.fastUseSettings[ImageNames.AdminMapButton]; // Skeld || Dleks
+            else if (Helpers.isMira()) button = FastDestroyableSingleton<HudManager>.Instance.UseButton.fastUseSettings[ImageNames.MIRAAdminButton]; // Mira HQ
+            else if (Helpers.isAirship()) button = FastDestroyableSingleton<HudManager>.Instance.UseButton.fastUseSettings[ImageNames.AirshipAdminButton]; // Airship
+            else if (Helpers.isFungle()) button = FastDestroyableSingleton<HudManager>.Instance.UseButton.fastUseSettings[ImageNames.AdminMapButton];  // Hacker can Access the Admin panel on Fungle
             adminSprite = button.Image;
             return adminSprite;
         }
@@ -1139,6 +1141,14 @@ namespace TheOtherRoles
             return staticVentSealedSprite;
         }
 
+        private static Sprite fungleVentSealedSprite;
+        public static Sprite getFungleVentSealedSprite() {
+            if (fungleVentSealedSprite) return fungleVentSealedSprite;
+            fungleVentSealedSprite = Helpers.loadSpriteFromResources("TheOtherRoles.Resources.FungleVentSealed.png", 160f);
+            return fungleVentSealedSprite;
+        }
+
+
         private static Sprite submergedCentralUpperVentSealedSprite;
         public static Sprite getSubmergedCentralUpperSealedSprite() {
             if (submergedCentralUpperVentSealedSprite) return submergedCentralUpperVentSealedSprite;
@@ -1449,13 +1459,17 @@ namespace TheOtherRoles
                 }
             } else {
                 int randomNumber = rnd.Next(4);
-                string typeOfColor = Helpers.isLighterColor(Medium.target.killerIfExisting.Data.DefaultOutfit.ColorId) ? "lighter" : "darker";
+                string typeOfColor = Helpers.isLighterColor(Medium.target.killerIfExisting) ? "lighter" : "darker";
                 float timeSinceDeath = ((float)(Medium.meetingStartTime - Medium.target.timeOfDeath).TotalMilliseconds);
-                
-                if (randomNumber == 0) msg = "If my role hasn't been saved, there's no " + RoleInfo.GetRolesString(Medium.target.player, false) + " in the game anymore.";
-                else if (randomNumber == 1) msg = "I'm not sure, but I guess a " + typeOfColor + " color killed me.";
+                var roleString = RoleInfo.GetRolesString(Medium.target.player, false);
+                if (randomNumber == 0) {
+                    if (!roleString.Contains("Impostor") && !roleString.Contains("Crewmate"))
+                        msg = "If my role hasn't been saved, there's no " + roleString + " in the game anymore.";
+                    else
+                        msg = "I am a " + roleString + " without an other role."; 
+                } else if (randomNumber == 1) msg = "I'm not sure, but I guess a " + typeOfColor + " color killed me.";
                 else if (randomNumber == 2) msg = "If I counted correctly, I died " + Math.Round(timeSinceDeath / 1000) + "s before the next meeting started.";
-                else msg = "It seems like my killer was the " + RoleInfo.GetRolesString(Medium.target.killerIfExisting, false, false, true) + ".";
+                else msg = "It seems like my killer is the " + RoleInfo.GetRolesString(Medium.target.killerIfExisting, false, false, true) + ".";
             }
 
             if (rnd.NextDouble() < chanceAdditionalInfo) {
@@ -1936,8 +1950,10 @@ namespace TheOtherRoles
                     chameleonPlayer.SetHatAndVisorAlpha(visibility);
                     chameleonPlayer.cosmetics.skin.layer.color = chameleonPlayer.cosmetics.skin.layer.color.SetAlpha(visibility);
                     chameleonPlayer.cosmetics.nameText.color = chameleonPlayer.cosmetics.nameText.color.SetAlpha(visibility);
-                    chameleonPlayer.cosmetics.currentPet.rend.color = chameleonPlayer.cosmetics.currentPet.rend.color.SetAlpha(petVisibility);
-                    chameleonPlayer.cosmetics.currentPet.shadowRend.color = chameleonPlayer.cosmetics.currentPet.shadowRend.color.SetAlpha(petVisibility);
+                    foreach (var rend in chameleonPlayer.cosmetics.currentPet.renderers)
+                        rend.color = rend.color.SetAlpha(petVisibility);
+                    foreach (var shadowRend in chameleonPlayer.cosmetics.currentPet.shadows)
+                        shadowRend.color = shadowRend.color.SetAlpha(petVisibility);
                 } catch { }
             }
                 
