@@ -21,6 +21,7 @@ namespace TheOtherRoles
 {
     public enum RoleId {
         Jester,
+        madmate,
         Mayor,
         Portalmaker,
         Engineer,
@@ -301,6 +302,9 @@ namespace TheOtherRoles
                         break;
                     case RoleId.Vampire:
                         Vampire.vampire = player;
+                        break;
+                    case RoleId.madmate:
+                        Madmate.madmate = player;
                         break;
                     case RoleId.Snitch:
                         Snitch.snitch = player;

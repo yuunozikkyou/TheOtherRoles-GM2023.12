@@ -54,6 +54,7 @@ namespace TheOtherRoles
             BountyHunter.clearAndReload();
             Vulture.clearAndReload();
             Medium.clearAndReload();
+
             Lawyer.clearAndReload();
             Pursuer.clearAndReload();
             Witch.clearAndReload();
@@ -61,7 +62,7 @@ namespace TheOtherRoles
             Thief.clearAndReload();
             Trapper.clearAndReload();
             Bomber.clearAndReload();
-
+            Madmate.clearAndReload();
             // Modifier
             Bait.clearAndReload();
             Bloody.clearAndReload();
@@ -88,6 +89,37 @@ namespace TheOtherRoles
             public static bool canCallEmergency = true;
             public static bool hasImpostorVision = false;
 
+
+    //public static class Madmate
+    //{
+       // public static PlayerControl madmate;
+        //public static Color color = Palette.ImpostorRed;
+
+        //public static bool canEnterVents = true;
+        //public static bool hasImpostorVision = false;
+        //public static bool noticeImpostors = false;
+        //public static bool exileCrewmate = false;
+
+        //public static void clearAndReload() {
+            //madmate = null;
+            //CustomOption opCanEnterVents = CustomOptionHolder.madmateCanEnterVents;
+            //CustomOption opHasImpostorVision = CustomOptionHolder.madmateHasImpostorVision;
+            //CustomOption opNoticeImpostors = CustomOptionHolder.madmateNoticeImpostors;
+            //CustomOption opExileCrewmate = CustomOptionHolder.madmateExileCrewmate;
+
+//{
+                // Madmate should be configurable from EvilHacker options if EvilHacker can make a madmate
+                //opCanEnterVents = CustomOptionHolder.createdMadmateCanEnterVents;
+                //opHasImpostorVision = CustomOptionHolder.createdMadmateHasImpostorVision;
+                //opNoticeImpostors = CustomOptionHolder.createdMadmateNoticeImpostors;
+                //opExileCrewmate = CustomOptionHolder.createdMadmateExileCrewmate;
+            //}
+            //canEnterVents = opCanEnterVents.getBool();
+            //hasImpostorVision = opHasImpostorVision.getBool();
+            //noticeImpostors = opNoticeImpostors.getBool();
+            //exileCrewmate = opExileCrewmate.getBool();
+        //}
+    //}
             public static void clearAndReload() {
                 jester = null;
                 triggerJesterWin = false;
@@ -187,6 +219,23 @@ namespace TheOtherRoles
                 voteTwice = true;
             }
         }
+
+    public static class Madmate
+    {
+        public static PlayerControl madmate;
+        public static Color color = Palette.ImpostorRed;
+
+        public static bool canEnterVents = false;
+        public static bool hasImpostorVision = false;
+        public static bool noticeImpostors = false;
+        public static bool exileCrewmate = false;
+
+        public static void clearAndReload() {
+            madmate = null;
+            CustomOption opCanEnterVents = CustomOptionHolder.madmetebent;
+
+        }
+    }
 
         public static class Engineer {
             public static PlayerControl engineer;

@@ -21,8 +21,8 @@ namespace TheOtherRoles.Patches {
     [HarmonyPatch(typeof(IGameOptionsExtensions), nameof(IGameOptionsExtensions.GetAdjustedNumImpostors))]
     class GameOptionsDataGetAdjustedNumImpostorsPatch {
         public static void Postfix(ref int __result) {
-            if (TORMapOptions.gameMode == CustomGamemodes.HideNSeek) {
-                int impCount = Mathf.RoundToInt(CustomOptionHolder.hideNSeekHunterCount.getFloat());
+            if (TORMapOptions.gameMode == CustomGamemodes.HideNSeek || TORMapOptions.gameMode == CustomGamemodes.PropHunt) {
+                int impCount = TORMapOptions.gameMode == CustomGamemodes.HideNSeek ? Mathf.RoundToInt(CustomOptionHolder.hideNSeekHunterCount.getFloat()) : CustomOptionHolder.propHuntNumberOfHunters.getQuantity();
                 __result = impCount; ; // Set Imp Num
             } else if (GameOptionsManager.Instance.CurrentGameOptions.GameMode == GameModes.Normal) {  // Ignore Vanilla impostor limits in TOR Games.
                 __result = Mathf.Clamp(GameOptionsManager.Instance.CurrentGameOptions.NumImpostors, 1, 3);
@@ -34,6 +34,8 @@ namespace TheOtherRoles.Patches {
     class GameOptionsDataValidatePatch {
         public static void Postfix(GameOptionsData __instance) {
             if (TORMapOptions.gameMode == CustomGamemodes.HideNSeek || GameOptionsManager.Instance.CurrentGameOptions.GameMode != GameModes.Normal) return;
+            if (TORMapOptions.gameMode == CustomGamemodes.PropHunt)
+                __instance.NumImpostors = CustomOptionHolder.propHuntNumberOfHunters.getQuantity();
             __instance.NumImpostors = GameOptionsManager.Instance.CurrentGameOptions.NumImpostors;
         }
     }
@@ -49,7 +51,7 @@ namespace TheOtherRoles.Patches {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(CachedPlayer.LocalPlayer.PlayerControl.NetId, (byte)CustomRPC.ResetVaribles, Hazel.SendOption.Reliable, -1);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCProcedure.resetVariables();
-            if (TORMapOptions.gameMode == CustomGamemodes.HideNSeek || GameOptionsManager.Instance.currentGameOptions.GameMode == GameModes.HideNSeek) return; // Don't assign Roles in Hide N Seek
+            if (TORMapOptions.gameMode == CustomGamemodes.HideNSeek || TORMapOptions.gameMode == CustomGamemodes.PropHunt || GameOptionsManager.Instance.currentGameOptions.GameMode == GameModes.HideNSeek) return; // Don't assign Roles in Hide N Seek
             if (CustomOptionHolder.activateRoles.getBool()) // Don't assign Roles in Tutorial or if deactivated
                 assignRoles();
         }
@@ -106,7 +108,8 @@ namespace TheOtherRoles.Patches {
             Dictionary<byte, int> impSettings = new Dictionary<byte, int>();
             Dictionary<byte, int> neutralSettings = new Dictionary<byte, int>();
             Dictionary<byte, int> crewSettings = new Dictionary<byte, int>();
-            
+
+
             impSettings.Add((byte)RoleId.Morphling, CustomOptionHolder.morphlingSpawnRate.getSelection());
             impSettings.Add((byte)RoleId.Camouflager, CustomOptionHolder.camouflagerSpawnRate.getSelection());
             impSettings.Add((byte)RoleId.Vampire, CustomOptionHolder.vampireSpawnRate.getSelection());
@@ -144,10 +147,13 @@ namespace TheOtherRoles.Patches {
             crewSettings.Add((byte)RoleId.Snitch, CustomOptionHolder.snitchSpawnRate.getSelection());
             crewSettings.Add((byte)RoleId.Medium, CustomOptionHolder.mediumSpawnRate.getSelection());
             crewSettings.Add((byte)RoleId.Trapper, CustomOptionHolder.trapperSpawnRate.getSelection());
-            if (impostors.Count > 1) {
+            //crewSettings.Add((byte)RoleId.madmate, CustomOptionHolder.madmateSpawnRate.getSelection());
+           if (impostors.Count > 1) {
                 // Only add Spy if more than 1 impostor as the spy role is otherwise useless
                 crewSettings.Add((byte)RoleId.Spy, CustomOptionHolder.spySpawnRate.getSelection());
             }
+
+            
             crewSettings.Add((byte)RoleId.SecurityGuard, CustomOptionHolder.securityGuardSpawnRate.getSelection());
 
             return new RoleAssignmentData {

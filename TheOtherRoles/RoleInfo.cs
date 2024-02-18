@@ -51,6 +51,7 @@ namespace TheOtherRoles
         public static RoleInfo detective = new RoleInfo("探偵", Detective.color, "足跡を調べて <color=#FF1919FF>インポスター</color> を見つけよう", "足跡を調べる", RoleId.Detective);
         public static RoleInfo timeMaster = new RoleInfo("タイムマスター", TimeMaster.color, "タイムシールドを使って身を守ろう", "タイムシールドを使う", RoleId.TimeMaster);
         public static RoleInfo medic = new RoleInfo("メディック", Medic.color, "盾で誰かを守る", "盾で誰かを守る", RoleId.Medic);
+        //public static RoleInfo madmate = new RoleInfo("マッドメイト",Madmate.color,"インポスターの手助けをしよう", "インポスターの手助けをする" ,RoleId.madmate);
         public static RoleInfo swapper = new RoleInfo("スワッパー", Swapper.color, "<color=#FF1919FF>インポスター</color> を通報するために票を交換しよう", "スワップ投票", RoleId.Swapper);
         public static RoleInfo seer = new RoleInfo("シーア", Seer.color, "クルーが死ぬのを見るだろう", "クルーが死ぬのを見るだろう", RoleId.Seer);
         public static RoleInfo hacker = new RoleInfo("ハッカー", Hacker.color, "<color=#FF1919FF>インポスター</color> を見つけるために、システムをハックする", "ハックしてインポスターを見つけよう", RoleId.Hacker);
@@ -82,6 +83,8 @@ namespace TheOtherRoles
         public static RoleInfo prop = new RoleInfo("プロップ", Color.white, "モノに化けて生き残る", "モノに変装する", RoleId.Crewmate);
 
 
+        //public static RoleInfo madmate = new RoleInfo("マッドメイト", Madmate.color, "インポスターの手助けをしよう", "投票で吊られよう", RoleId.madmate);
+
 
         // Modifier
         public static RoleInfo bloody = new RoleInfo("血まみれ", Color.yellow, "キラーは血の跡を残す", "キラーは血の跡を残す", RoleId.Bloody, false, true);
@@ -98,6 +101,7 @@ namespace TheOtherRoles
 
 
         public static List<RoleInfo> allRoleInfos = new List<RoleInfo>() {
+            //madmate,
             impostor,
             godfather,
             mafioso,
@@ -144,6 +148,7 @@ namespace TheOtherRoles
             securityGuard,
             bait,
             medium,
+
             trapper,
             bloody,
             antiTeleport,
@@ -182,6 +187,7 @@ namespace TheOtherRoles
             int count = infos.Count;  // Save count after modifiers are added so that the role count can be checked
 
             // Special roles
+            //if (p == Madmate.madmate) infos.Add(madmate);
             if (p == Jester.jester) infos.Add(jester);
             if (p == Mayor.mayor) infos.Add(mayor);
             if (p == Portalmaker.portalmaker) infos.Add(portalmaker);

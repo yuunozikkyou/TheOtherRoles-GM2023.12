@@ -7,8 +7,22 @@ namespace TheOtherRoles {
     public class CustomOptionHolder {
         public static string[] rates = new string[]{"0%", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"};
         public static string[] ratesModifier = new string[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15" };
-        public static string[] presets = new string[]{"Preset 1", "Preset 2", "Random Preset Skeld", "Random Preset Mira HQ", "Random Preset Polus", "Random Preset Airship", "Random Preset Submerged" };
+        public static string[] presets = new string[]{"プリセット 1", "プリセット 2", "ランダムプリセットスケルド", "ランダムプリセットミラHQ", "ランダムプリセットポーラス", "ランダムプリセットエアーシップ", "ランダムプリセットサブマージド" };
 
+        public static CustomOption createdMadmateCanEnterVents;
+        public static CustomOption createdMadmateHasImpostorVision;
+        public static CustomOption createdMadmateNoticeImpostors;
+        public static CustomOption madmateSpawnRate;
+        public static CustomOption madmateCanDieToSheriff;
+        public static CustomOption madmateCanEnterVents;
+        public static CustomOption madmateHasImpostorVision;
+        public static CustomOption madmateNoticeImpostors;
+        public static CustomOption madmateCommonTasks;
+        public static CustomOption madmateShortTasks;
+        public static CustomOption madmateLongTasks;
+        public static CustomOption madmateExileCrewmate;
+        public static CustomOption madmetebent;
+        public static CustomOption createdMadmateExileCrewmate;
         public static CustomOption presetSelection;
         public static CustomOption activateRoles;
         public static CustomOption crewmateRolesCountMin;
@@ -405,6 +419,7 @@ namespace TheOtherRoles {
             return option == CustomOptionHolder.propHuntMap && option == CustomOptionHolder.hideNSeekMap;
         }
 
+        public static CustomOption evilHackerCanCreateMadmate;
         public static void Load() {
 
             CustomOption.vanillaSettings = TheOtherRolesPlugin.Instance.Config.Bind("プリセット0", "バニラオプション", "");
@@ -427,6 +442,17 @@ namespace TheOtherRoles {
             modifiersCountMin = CustomOption.Create(306, Types.General, cs(new Color(204f / 255f, 204f / 255f, 0, 1f), "最小属性数"), 15f, 0f, 15f, 1f);
             modifiersCountMax = CustomOption.Create(307, Types.General, cs(new Color(204f / 255f, 204f / 255f, 0, 1f), "最大属性数"), 15f, 0f, 15f, 1f);
             //deepl乱用タイムある程度は直してるが問題があったら報告よろしく。翻訳者は日本人やで
+            
+            //madmateSpawnRate = CustomOption.Create(16, Types.Crewmate, cs(Janitor.color, "マッドメイト"), rates, null, true);
+            //madmateCanDieToSheriff = CustomOption.Create(17, Types.Crewmate,("よくわからん(仮実装)"), false, madmateSpawnRate);
+            //madmateCanEnterVents = CustomOption.Create(18, Types.Crewmate, ("ベントに入れるか"), false, madmateSpawnRate);
+            //madmateHasImpostorVision = CustomOption.Create(19, Types.Crewmate,("これも(ry"), false, madmateSpawnRate);
+            //madmateNoticeImpostors = CustomOption.Create(20, Types.Crewmate,("なんでわからないって?"), false, madmateSpawnRate);
+            //madmateCommonTasks = CustomOption.Create(21, Types.Crewmate,("通常タスク数"), 0f, 0f, 4f, 1f, madmateNoticeImpostors);
+            //madmateShortTasks = CustomOption.Create(22, Types.Crewmate,("ショートタスク数"), 0f, 0f, 23f, 1f, madmateNoticeImpostors);
+            //madmateLongTasks = CustomOption.Create(23, Types.Crewmate,("ロングタスク数"), 0f, 0f, 15f, 1f, madmateNoticeImpostors);
+            //madmateExileCrewmate = CustomOption.Create(24, Types.Crewmate, ("これ移植しただけだからさ★"), false, madmateSpawnRate);
+
             mafiaSpawnRate = CustomOption.Create(18, Types.Impostor, cs(Janitor.color, "マフィア"), rates, null, true);
             janitorCooldown = CustomOption.Create(19, Types.Impostor, "ジャニタークールダウン", 30f, 10f, 60f, 2.5f, mafiaSpawnRate);
 

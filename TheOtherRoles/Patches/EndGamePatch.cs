@@ -225,10 +225,10 @@ namespace TheOtherRoles.Patches {
                 AdditionalTempData.additionalWinConditions.Add(WinCondition.AdditionalAlivePursuerWin);
             }
 
-            AdditionalTempData.timer = ((float)(DateTime.UtcNow - HideNSeek.startTime).TotalMilliseconds) / 1000;
+            AdditionalTempData.timer = ((float)(DateTime.UtcNow - (HideNSeek.isHideNSeekGM ? HideNSeek.startTime : PropHunt.startTime)).TotalMilliseconds) / 1000;
 
             // Reset Settings
-            if (TORMapOptions.gameMode == CustomGamemodes.HideNSeek) ShipStatusPatch.resetVanillaSettings();
+            if (TORMapOptions.gameMode == CustomGamemodes.HideNSeek ) ShipStatusPatch.resetVanillaSettings();
             RPCProcedure.resetVariables();
             EventUtility.gameEndsUpdate();
         }
@@ -262,13 +262,13 @@ namespace TheOtherRoles.Patches {
                 float num7 = Mathf.Lerp(1f, 0.65f, num4) * 0.9f;
                 Vector3 vector = new Vector3(num7, num7, 1f);
                 poolablePlayer.transform.localScale = vector;
-                poolablePlayer.UpdateFromPlayerOutfit((GameData.PlayerOutfit) winningPlayerData2, PlayerMaterial.MaskType.ComplexUI, winningPlayerData2.IsDead, true);
                 if (winningPlayerData2.IsDead) {
-                    poolablePlayer.cosmetics.currentBodySprite.BodySprite.sprite = poolablePlayer.cosmetics.currentBodySprite.GhostSprite;
+                    poolablePlayer.SetBodyAsGhost();
                     poolablePlayer.SetDeadFlipX(i % 2 == 0);
                 } else {
                     poolablePlayer.SetFlipX(i % 2 == 0);
                 }
+                poolablePlayer.UpdateFromPlayerOutfit(winningPlayerData2, PlayerMaterial.MaskType.None, winningPlayerData2.IsDead, true);
 
                 poolablePlayer.cosmetics.nameText.color = Color.white;
                 poolablePlayer.cosmetics.nameText.transform.localScale = new Vector3(1f / vector.x, 1f / vector.y, 1f / vector.z);
@@ -332,14 +332,14 @@ namespace TheOtherRoles.Patches {
                 }
             }
 
-            if (TORMapOptions.showRoleSummary || HideNSeek.isHideNSeekGM) {
+            if (TORMapOptions.showRoleSummary || HideNSeek.isHideNSeekGM || PropHunt.isPropHuntGM) {
                 var position = Camera.main.ViewportToWorldPoint(new Vector3(0f, 1f, Camera.main.nearClipPlane));
                 GameObject roleSummary = UnityEngine.Object.Instantiate(__instance.WinText.gameObject);
                 roleSummary.transform.position = new Vector3(__instance.Navigation.ExitButton.transform.position.x + 0.1f, position.y - 0.1f, -214f); 
                 roleSummary.transform.localScale = new Vector3(1f, 1f, 1f);
 
                 var roleSummaryText = new StringBuilder();
-                if (HideNSeek.isHideNSeekGM) {
+                if (HideNSeek.isHideNSeekGM || PropHunt.isPropHuntGM) {
                     int minutes = (int)AdditionalTempData.timer / 60;
                     int seconds = (int)AdditionalTempData.timer % 60;
                     roleSummaryText.AppendLine($"<color=#FAD934FF>Time: {minutes:00}:{seconds:00}</color> \n");
@@ -452,7 +452,7 @@ namespace TheOtherRoles.Patches {
         }
 
         private static bool CheckAndEndGameForTaskWin(ShipStatus __instance) {
-            if (HideNSeek.isHideNSeekGM && !HideNSeek.taskWinPossible) return false;
+            if (HideNSeek.isHideNSeekGM && !HideNSeek.taskWinPossible || PropHunt.isPropHuntGM) return false;
             if (GameData.Instance.TotalTasks > 0 && GameData.Instance.TotalTasks <= GameData.Instance.CompletedTasks) {
                 //__instance.enabled = false;
                 GameManager.Instance.RpcEndGame(GameOverReason.HumansByTask, false);
@@ -489,7 +489,7 @@ namespace TheOtherRoles.Patches {
         }
 
         private static bool CheckAndEndGameForImpostorWin(ShipStatus __instance, PlayerStatistics statistics) {
-            if (HideNSeek.isHideNSeekGM) 
+            if (HideNSeek.isHideNSeekGM || PropHunt.isPropHuntGM) 
                 if ((0 != statistics.TotalAlive - statistics.TeamImpostorsAlive)) return false;
 
             if (statistics.TeamImpostorsAlive >= statistics.TotalAlive - statistics.TeamImpostorsAlive && statistics.TeamJackalAlive == 0 && !(statistics.TeamImpostorHasAliveLover && statistics.TeamLoversAlive == 2)) {
@@ -515,6 +515,10 @@ namespace TheOtherRoles.Patches {
         private static bool CheckAndEndGameForCrewmateWin(ShipStatus __instance, PlayerStatistics statistics) {
             if (HideNSeek.isHideNSeekGM && HideNSeek.timer <= 0 && !HideNSeek.isWaitingTimer) {
                 //__instance.enabled = false;
+                GameManager.Instance.RpcEndGame(GameOverReason.HumansByVote, false);
+                return true;
+            }
+            if (PropHunt.isPropHuntGM && PropHunt.timer <= 0 && PropHunt.timerRunning) {
                 GameManager.Instance.RpcEndGame(GameOverReason.HumansByVote, false);
                 return true;
             }
